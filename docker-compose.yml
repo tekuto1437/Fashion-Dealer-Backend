@@ -1,0 +1,50 @@
+version: '3.9'
+services:
+  postgres:
+    container_name: fashion-dealer-postgres
+    image: postgres:12.13-alpine3.17
+    restart: unless-stopped
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: Nataner
+      POSTGRES_PASSWORD: jellyfish
+      POSTGRES_ROOT_PASSWORD: jellyfish
+      POSTGRES_DB: fashion-dealer
+    ports:
+      - '5432:5432'
+    networks:
+      - backend
+  adminer:
+    container_name: fashion-dealer-adminer
+    image: adminer
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    ports:
+      - 8080:8080
+    networks:
+      - backend
+  minio:
+    container_name: fashion-dealer-minio
+    image: bitnami/minio
+    restart: unless-stopped
+    volumes:
+      - minio:/data
+    environment:
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=miniosecret
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  pgdata:
+    driver: local
+  minio:
+    driver: local
